@@ -41,7 +41,9 @@ fn main() -> Result<()> {
         .map(|x| list::File::try_from(x.as_str()).ok().unwrap())
         .collect();
     for i in files {
-        let copyable = match get_extension(i.name()) {
+        let potential = i.name();
+
+        let copyable = match get_extension(potential) {
             Ok(ext) => {
                 if ext == "bmp" {
                     true
@@ -55,11 +57,19 @@ fn main() -> Result<()> {
         if copyable {
             let buffer = stream
                 .retr_as_buffer(i.name())
-                .context(format!("{} could not be retrieved", i.name()))?;
+                .context(format!("{} could not be retrieved", potential))?;
 
-            let mut file = File::create(format!("{}{}", &args.output, i.name()))?;
+            let mut file = File::create(format!("{}{}", &args.output, potential))
+                .context(format!("Could not create {}{}", &args.output, potential))?;
 
-            file.write_all(&buffer.into_inner())?;
+            file.write_all(&buffer.into_inner())
+                .context(format!("Could write to {}{}", &args.output, potential))?;
+
+            if args.delete {
+                stream
+                    .rm(i.name())
+                    .context(format!("Could not removed {} from the server", potential))?;
+            }
         }
     }
 
