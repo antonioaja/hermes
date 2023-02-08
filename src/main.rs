@@ -40,9 +40,12 @@ fn main() -> Result<()> {
         .iter()
         .map(|x| list::File::try_from(x.as_str()).ok().unwrap())
         .collect();
+
+    // Iterate over all files
     for i in files {
         let potential = i.name();
 
+        // Check if we wanna copy a file
         let copyable = match get_extension(potential) {
             Ok(ext) => {
                 if ext == "bmp" {
@@ -55,16 +58,18 @@ fn main() -> Result<()> {
         };
 
         if copyable {
+            // Read file into buffer
             let buffer = stream
                 .retr_as_buffer(i.name())
                 .context(format!("{} could not be retrieved", potential))?;
 
+            // Create and write to file
             let mut file = File::create(format!("{}{}", &args.output, potential))
                 .context(format!("Could not create {}{}", &args.output, potential))?;
-
             file.write_all(&buffer.into_inner())
                 .context(format!("Could write to {}{}", &args.output, potential))?;
 
+            // Delete file from server if desired
             if args.delete {
                 stream
                     .rm(i.name())
@@ -76,6 +81,8 @@ fn main() -> Result<()> {
     Ok(())
 }
 
+/// Returns extension (if available) an input string
+/// Example: "test.png" => "png"
 fn get_extension(filename: &str) -> Result<&str> {
     Path::new(filename)
         .extension()
