@@ -38,7 +38,18 @@ fn main() -> Result<()> {
                 .context("Could not return the current directory")?
         ))?
         .iter()
-        .map(|x| list::File::try_from(x.as_str()).ok().unwrap())
+        .map(|x| {
+            list::File::try_from(x.as_str())
+                .ok()
+                .context(format!(
+                    "Could not list files in {:?}",
+                    stream
+                        .pwd()
+                        .context("Could not return the current directory")
+                        .unwrap()
+                ))
+                .unwrap()
+        })
         .collect();
 
     // Iterate over all files
@@ -46,11 +57,7 @@ fn main() -> Result<()> {
         let potential = i.name();
 
         // Check if we wanna copy a file
-        let copyable = if get_extension(potential) == args.extension {
-            true
-        } else {
-            false
-        };
+        let copyable = get_extension(potential) == args.extension;
 
         if copyable {
             // Read file into buffer
@@ -67,7 +74,7 @@ fn main() -> Result<()> {
             // Delete file from server if desired
             if args.delete {
                 stream
-                    .rm(i.name())
+                    .rm(potential)
                     .context(format!("Could not removed {} from the server", potential))?;
             }
         }
