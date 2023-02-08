@@ -16,7 +16,7 @@ pub struct Args {
     pub port: u16,
 
     /// The extension to copy from the folder
-    #[clap(short, long, value_parser, default_value = ".bmp")]
+    #[clap(short, long, value_parser, default_value = "bmp")]
     pub extension: String,
 
     /// Delete the file from the server after copying

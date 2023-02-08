@@ -46,15 +46,10 @@ fn main() -> Result<()> {
         let potential = i.name();
 
         // Check if we wanna copy a file
-        let copyable = match get_extension(potential) {
-            Ok(ext) => {
-                if ext == "bmp" {
-                    true
-                } else {
-                    false
-                }
-            }
-            _ => false,
+        let copyable = if get_extension(potential) == args.extension {
+            true
+        } else {
+            false
         };
 
         if copyable {
@@ -83,9 +78,9 @@ fn main() -> Result<()> {
 
 /// Returns extension (if available) an input string
 /// Example: "test.png" => "png"
-fn get_extension(filename: &str) -> Result<&str> {
+fn get_extension(filename: &str) -> &str {
     Path::new(filename)
         .extension()
         .and_then(OsStr::to_str)
-        .context(format!("Could not find extension for {}", filename))
+        .unwrap_or("")
 }
