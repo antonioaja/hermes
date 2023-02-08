@@ -1,6 +1,10 @@
 use anyhow::*;
 use clap::Parser;
-use std::convert::TryFrom;
+use std::ffi::OsStr;
+use std::io::Write;
+use std::path::Path;
+use std::result::Result::Ok;
+use std::{convert::TryFrom, fs::File};
 use suppaftp::{list, FtpStream};
 
 pub mod args;
@@ -37,8 +41,34 @@ fn main() -> Result<()> {
         .map(|x| list::File::try_from(x.as_str()).ok().unwrap())
         .collect();
     for i in files {
-        println!("{}", i.name());
+        let copyable = match get_extension(i.name()) {
+            Ok(ext) => {
+                if ext == "bmp" {
+                    true
+                } else {
+                    false
+                }
+            }
+            _ => false,
+        };
+
+        if copyable {
+            let buffer = stream
+                .retr_as_buffer(i.name())
+                .context(format!("{} could not be retrieved", i.name()))?;
+
+            let mut file = File::create(format!("{}{}", &args.output, i.name()))?;
+
+            file.write_all(&buffer.into_inner())?;
+        }
     }
 
     Ok(())
+}
+
+fn get_extension(filename: &str) -> Result<&str> {
+    Path::new(filename)
+        .extension()
+        .and_then(OsStr::to_str)
+        .context(format!("Could not find extension for {}", filename))
 }

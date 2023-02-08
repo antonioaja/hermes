@@ -12,7 +12,7 @@ pub struct Args {
     pub ip: String,
 
     /// The port number to connect to
-    #[clap(short, long, value_parser, default_value_t = 21)]
+    #[clap(long, value_parser, default_value_t = 21)]
     pub port: u16,
 
     /// The extension to copy from the folder
@@ -36,6 +36,6 @@ pub struct Args {
     pub user: String,
 
     /// Password of the server
-    #[clap(short, long, value_parser, default_value = "")]
+    #[clap(long, value_parser, default_value = "")]
     pub password: String,
 }
