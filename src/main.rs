@@ -57,7 +57,7 @@ fn main() -> Result<()> {
         let potential = i.name();
 
         // Check if we wanna copy a file
-        let copyable = get_extension(potential) == args.extension;
+        let copyable = get_extension(potential).to_lowercase() == args.extension.to_lowercase();
 
         if copyable {
             // Read file into buffer
