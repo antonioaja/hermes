@@ -3,3 +3,5 @@ Cargo.lock
 *.bmp
 *.png
 /.vscode
+*.html
+*.json

@@ -12,4 +12,4 @@ lto = true
 [dependencies]
 suppaftp = "4.7.0"
 anyhow = "1.0.58"
-clap = { version = "3.2.23", features = ["derive"] }
+clap = { version = "3.2.25", features = ["std", "derive"], default-features = false }
