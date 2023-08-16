@@ -6,6 +6,12 @@ A Rust program that connects to a server via FTP, lists the files in a specified
 
 The code is divided into two main parts: CLI argument parsing and FTP file copying.
 
+## Example:
+
+```bash
+.\hermes.exe --ip "192.168.1.42" --port "21" -u "user" -f "folder" -e "csv" -o "destination/" -d
+```
+
 ## Dependencies
 
 * `anyhow` crate for error handling
@@ -39,3 +45,13 @@ The `main` function is the entry point of the program. It performs the following
 8. If it does, retrieve the file using FtpStream::retr_as_buffer() function from the suppaftp module.
 9. Write the file to disk using File::create() and File::write_all() functions from the std module.
 10. Delete the file from the server (if desired) using FtpStream::rm() function from the 
+
+### Compiling
+
+Complied using cargo >= 1.63. This can be installed via the [rustup](https://www.rust-lang.org/tools/install) toolchain.
+
+### Credits
+
+* [suppaftp](https://github.com/veeso/suppaftp)
+* [anyhow](https://github.com/dtolnay/anyhow)
+* [clap](https://github.com/clap-rs/clap)
